@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido de pizzas</title>
+</head>
+<body>
+    <h1>Cree su Pizza</h1>
+    <form action="/pedidos" method="post">
+        <label for="nombre"> Ingrese su nombre:</label>
+        <br>
+        <input type="text" id="nombre" name="nombre">
+        <br>
+        <label for="pizza"> Seleccione el tamaño de la pizza</label>
+        <br>
+
+        <input type="radio" name="pequeño" id="pequeño">
+        <label for="pequeño">Pequeña</label>
+        <input type="radio" name="mediano" id="mediano">
+        <label for="mediano">Mediana</label>
+        <input type="radio" name="grande" id="grande">
+        <label for="grande">Grande</label>
+        <br>
+        <label for="ingredientes"> Seleccione los ingredientes que desea agregar en su pizza</label>
+        <br>
+
+        <input type="checkbox" name="jamon" id="jamon">
+        <label for="jamon">Jamon</label>
+        <br>
+        <input type="checkbox" name="queso" id="queso">
+        <label for="queso">Queso</label>
+        <br>
+        <input type="checkbox" name="champiñones" id="champiñones">
+        <label for="champiñones">Champiñones</label>
+        <br>
+        <input type="checkbox" name="aceitunas" id="aceitunas">
+        <label for="aceitunas">Aceitunas</label>
+        <br>
+        <input type="checkbox" name="cebolla" id="cebolla">
+        <label for="cebolla">Cebolla</label>
+        <br>
+        <input type="checkbox" name="pimenton" id="pimenton">
+        <label for="pimenton">Pimentón</label>
+        <br>
+        <input type="checkbox" name="tocino" id="tocino">
+        <label for="tocino">Tocino</label>
+        <br>
+
+        <input type="submit" value="Enviar">
+
+    </form>
+    <a href="/pedidos/lista">ver lista pedidos</a>
+</body>
+</html>
