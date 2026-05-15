@@ -1,86 +1,43 @@
-//funciones completadas
+const PedidoModel = require('../modules/pedidoModules');
 
-// los datos se guardan en modules
-const pedidoModel = require('../modules/pedidoModules');
-
-// -> Contar cuántos ingredientes fueron seleccionados
-function contar(ingredientes) {
-    return ingredientes.length;
+const PRECIOS = {
+    Chica: { base: 3990, extra: 500 },
+    Mediana: { base: 5990, extra: 800 },
+    Grande: { base: 8490, extra: 1200 }
 };
 
-// -> Calcular ingredientes extra: los que superen los 3 incluidos en el precio base
-function calcularIngredientes(ingredientes) {
-    const INCLUIDOS = 3;
-    const total = contar(ingredientes);
-    const extra = total - INCLUIDOS;
-    return extra > 0 ? extra : 0;
+exports.getFormulario = (req, res) => {
+    res.render('index'); 
 };
 
-// -> Calcular precio base del tamaño + (ingredientes extra × valor extra del tamaño)
-function calcularPrecioUnitario(ingredientes, tamaño) {
-    const extra = calcularIngredientes(ingredientes);
-    const precioFinal = tamaño.precioBase + (extra * tamaño.valorExtra);
-    return precioFinal;
-};
+exports.registrarPedido = (req, res) => {
+    const { nombre, tamaño, ingredientes, cantidad } = req.body;
+    
+    // Asegurar que ingredientes sea un array
+    const listaIngredientes = Array.isArray(ingredientes) ? ingredientes : [ingredientes];
+    const numIngredientes = listaIngredientes.length;
+    
+    // Lógica de extras (más de 3)
+    const extras = Math.max(0, numIngredientes - 3);
+    const precioUnitario = PRECIOS[tamaño].base + (extras * PRECIOS[tamaño].extra);
+    const totalPedido = precioUnitario * parseInt(cantidad);
 
-// -> Calcular precio unitario × cantidad
-function totalPedido(ingredientes, tamaño, cantidad) {
-    const precioUnitario = calcularPrecioU(ingredientes, tamaño);
-    return precioUnitario * cantidad;
-};
-
-// -> registrar pedidos
-function registrar(req, res) {                              
-    const { nombre, tamaño, ingredientes } = req.body;    
-
-    if (!nombre || !tamaño || !ingredientes) {
-        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
-    }
-
-    const pedidosModel = require('../modules/pedidoModules');
-
-    const nuevoRegistro = pedidosModel.create({            
+    const nuevoPedido = {
         nombre,
         tamaño,
-        ingredientes
-    });
+        ingredientes: listaIngredientes.join(', '),
+        precioUnitario,
+        cantidad,
+        totalPedido
+    };
 
-    nuevoRegistro
-        .then(pedido => {
-            res.status(201).json({                        
-                mensaje: 'Pedido registrado con éxito',
-                data: pedido
-            });
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({ mensaje: 'Error al registrar el pedido' }); 
-        });
-}
+    PedidoModel.save(nuevoPedido);
+    res.redirect('/pedidos');
+};
 
-// -> crear tabla de pedidos
-function listar(req, res) {
-    const pedidosModel = require('../modules/pedidoModules'); 
+exports.listarPedidos = (req, res) => {
+    const pedidos = PedidoModel.getAll();
+    const totalAcumulado = pedidos.reduce((sum, p) => sum + p.totalPedido, 0);
+    res.render('lista', { pedidos, totalAcumulado });
+};
 
-    pedidosModel.findAll()  
-        .then(pedidos => {
-            const filas = pedidos.map(n =>  
-                `<tr>                          
-                    <td>${n.tamaño}</td>        
-                    <td>${n.ingredientes}</td> 
-                </tr>`                         
-            ).join('');                       
-
-            res.send(`                         
-                <table>
-                    ${filas}
-                </table>
-            `);                                
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).send('Error al obtener pedidos'); 
-        });
-}
-
-module.exports = { contar, calcularIngredientes, calcularPrecioUnitario, totalPedido, listar, registrar};
