@@ -13,11 +13,11 @@ exports.getFormulario = (req, res) => {
 exports.registrarPedido = (req, res) => {
     const { nombre, tamaño, ingredientes, cantidad } = req.body;
     
-    // Asegurar que ingredientes sea un array
+    
     const listaIngredientes = Array.isArray(ingredientes) ? ingredientes : [ingredientes];
     const numIngredientes = listaIngredientes.length;
     
-    // Lógica de extras (más de 3)
+    
     const extras = Math.max(0, numIngredientes - 3);
     const precioUnitario = PRECIOS[tamaño].base + (extras * PRECIOS[tamaño].extra);
     const totalPedido = precioUnitario * parseInt(cantidad);
